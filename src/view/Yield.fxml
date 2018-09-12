@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="260.0" minWidth="310.0" prefHeight="260.0" prefWidth="374.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sd2.view.YieldController">
+   <children>
+      <Label layoutX="53.0" layoutY="36.0" text="Saldo da Poupança:" />
+      <Label layoutX="21.0" layoutY="95.0" text="Rendimento em 3 meses:" />
+      <Label layoutX="22.0" layoutY="150.0" text="Rendimento em 6 meses:" />
+      <Label layoutX="20.0" layoutY="208.0" text="Rendimento em 12 meses:" />
+      <Label fx:id="yieldValueLabel" layoutX="194.0" layoutY="36.0" text="0.0" />
+      <Label fx:id="month3" layoutX="196.0" layoutY="95.0" text="0.0" />
+      <Label fx:id="month6" layoutX="196.0" layoutY="150.0" text="0.0" />
+      <Label fx:id="month12" layoutX="202.0" layoutY="208.0" text="0.0" />      
+   </children>
+</AnchorPane>
