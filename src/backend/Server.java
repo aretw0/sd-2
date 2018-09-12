@@ -12,6 +12,12 @@ import common.*;
 
 public class Server implements BankAcc{
 	
+	public static final int SUCCESS = 200; // SUCESSO
+	public static final int FAIL = 500; // SERVER ERROR
+	public static final int PERM_DEN = 403; // PERMISSION DENIED
+	public static final int NOT_FOUND = 404; // NOT FOUND
+	public static final int NOT_MOD = 304; // NOT MODIFIED
+	
 	private static List<Account> acList = new ArrayList<Account>();
 	
 	private void populateAcc() {
@@ -62,7 +68,7 @@ public class Server implements BankAcc{
 	@Override
 	public String login(String cpf, String password) throws RemoteException
 	{
-		for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+		for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account account = (Account) iterator.next();
 			if (account.getCpf().equals(cpf) && account.getPassword().equals(password)) {
 				return account.dumpStr();
@@ -81,7 +87,7 @@ public class Server implements BankAcc{
 		/*for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
 			Account account = (Account) iterator.next();
 			if (account.getCpf() == newAc.getCpf()) {
-				return -1;
+				return Server.PERM_DEN;
 			}
 			
 		}*/
@@ -91,90 +97,115 @@ public class Server implements BankAcc{
 		return newAc.getAccNumber();
 	}
 	@Override
-	public boolean lootCC(String password, int account, double ammount) throws RemoteException
+	public int lootCC(String password, int account, double ammount) throws RemoteException
 	{
 		
-		for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+		for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account ac = (Account) iterator.next();
-			if ((ac.getPassword().equals(password)) && (ac.getAccNumber() == account)) {
-				if (ac.getBalanceCC() >= ammount) {					
-					ac.setBalanceCC(ac.getBalanceCC() - ammount);
-					
-					return true;
+			if (ac.getAccNumber() == account) {
+				if (ac.getPassword().equals(password)) {
+					if (ac.getBalanceCC() >= ammount) {					
+						ac.setBalanceCC(ac.getBalanceCC() - ammount);
+						
+						return Server.SUCCESS;
+					} else {
+						System.out.println("Saldo insuficiente");
+						return Server.NOT_MOD;
+					}
 				} else {
-					System.out.println("Saldo insuficiente");
-					return false;
+					System.out.println("Senha errada");
+					return Server.PERM_DEN;
+				}
+				
+			}
+		}
+		return Server.NOT_FOUND;
+	}
+	@Override
+	public int lootCP(String password, int account, double ammount) throws RemoteException
+	{
+		for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
+			Account ac = (Account) iterator.next();
+			if (ac.getAccNumber() == account) {
+				if (ac.getPassword().equals(password)) {					
+					if (ac.getBalanceCP() >= ammount) {					
+						ac.setBalanceCP(ac.getBalanceCP() - ammount);
+						
+						return Server.SUCCESS;
+					} else {
+						System.out.println("Saldo insuficiente");
+						return Server.NOT_MOD;
+					}
+				} else {
+					System.out.println("Senha errada");
+					return Server.PERM_DEN;
 				}
 			}
 		}
-		return false;
+		return Server.NOT_FOUND;
 	}
 	@Override
-	public boolean lootCP(String password, int account, double ammount) throws RemoteException
+	public int depositCP(String password, int account, double ammount) throws RemoteException
 	{
-		for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+		for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account ac = (Account) iterator.next();
-			if ((ac.getPassword().equals(password)) && (ac.getAccNumber() == account)) {
-				if (ac.getBalanceCP() >= ammount) {					
-					ac.setBalanceCP(ac.getBalanceCP() - ammount);
-					
-					return true;
-				} else {
-					System.out.println("Saldo insuficiente");
-					return false;
+			if (ac.getAccNumber() == account) {
+				if (ac.getAccNumber() == account) {
+					if (ac.getPassword().equals(password)) {					
+						ac.setBalanceCP(ac.getBalanceCP() + ammount);
+						return Server.SUCCESS;
+					} else {
+						System.out.println("Senha errada");
+						return Server.PERM_DEN;
+					}
 				}
 			}
 		}
-		return false;
-	}
-	@Override
-	public boolean depositCP(String password, int account, double ammount) throws RemoteException
-	{
-		for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
-			Account ac = (Account) iterator.next();
-			if ((ac.getPassword().equals(password)) && (ac.getAccNumber() == account)) {
-				ac.setBalanceCP(ac.getBalanceCP() + ammount);
-				return true;
-			}
-		}
-		return false;
+		return Server.NOT_FOUND;
 	}
 	
 	@Override
-	public boolean depositCC(String password, int account, double ammount)throws RemoteException
+	public int depositCC(String password, int account, double ammount)throws RemoteException
 	{
-		for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+		for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account ac = (Account) iterator.next();
-			if ((ac.getPassword().equals(password)) && (ac.getAccNumber() == account)) {
-				ac.setBalanceCC(ac.getBalanceCC() + ammount);
-				return true;
+			if (ac.getAccNumber() == account) {
+				if (ac.getPassword().equals(password)) {					
+					ac.setBalanceCC(ac.getBalanceCC() + ammount);
+					return Server.SUCCESS;
+				} else {
+					System.out.println("Senha errada");
+					return Server.PERM_DEN;
+				}
 			}
 		}
 		
-		return false;
+		return Server.NOT_FOUND;
 	}
 	
 	@Override
-    public boolean transfer(String password, int accountRem, int accountDest, double ammount) throws RemoteException 
+    public int transfer(String password, int accountRem, int accountDest, double ammount) throws RemoteException 
     {
     	if (accountRem == accountDest) {
-    		return false;
+    		return Server.NOT_MOD;
     	}
     	
     	Account dest = null;
-    	Account rem = null;
-    	for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+    	for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account ac = (Account) iterator.next();
 			if (ac.getAccNumber() == accountRem) {
-				
-				if (ac.getBalanceCC() >= ammount) {
-					ac.setBalanceCC(ac.getBalanceCC() - ammount);
-					rem = new Account(ac);
+				if (ac.getPassword().equals(password)) {
+					
+					if (ac.getBalanceCC() >= ammount) {
+						ac.setBalanceCC(ac.getBalanceCC() - ammount);
+					} else {
+						System.out.println("Saldo insuficiente");
+						return Server.NOT_MOD;
+					}
 				} else {
-					System.out.println("Saldo insuficiente");
-					return false;
+					System.out.println("Senha errada");
+					return Server.PERM_DEN;
 				}
-				
 			}
 			if (ac.getAccNumber() == accountDest) {
 				dest = ac;
@@ -184,17 +215,16 @@ public class Server implements BankAcc{
     	if (dest != null) {
     		dest.setBalanceCC(dest.getBalanceCC() + ammount);
     	} else {
-    		return false;
+    		return Server.NOT_FOUND;
     	}
     	
-    	
-		return true;
+		return Server.SUCCESS;
 	}
 	
 	@Override
     public Double balanceCC(String password, int account) throws RemoteException
     {
-    	for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+    	for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account ac = (Account) iterator.next();
 			if (ac.getPassword().equals(password) && (ac.getAccNumber() == account)) {
 				return ac.getBalanceCC();
@@ -205,7 +235,7 @@ public class Server implements BankAcc{
 	@Override
     public Double balanceCP(String password, int account) throws RemoteException
     {
-    	for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+    	for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account ac = (Account) iterator.next();
 			if (ac.getPassword().equals(password) && (ac.getAccNumber() == account)) {
 				return ac.getBalanceCP();
@@ -216,21 +246,49 @@ public class Server implements BankAcc{
     }
 	
 	@Override
-    public boolean invest(String password, int account, double ammount) throws RemoteException
+    public int invest(String password, int account, double ammount) throws RemoteException
     {
-    	for (Iterator iterator = acList.iterator(); iterator.hasNext();) {
+    	for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
 			Account ac = (Account) iterator.next();
-			if (ac.getPassword().equals(password) && (ac.getAccNumber() == account)) {
-				if (ac.getBalanceCC() >= ammount) {
-					ac.setBalanceCC(ac.getBalanceCC() - ammount);
-					ac.setFixedIncome(ammount);
-					return true;
+			if (ac.getAccNumber() == account) {
+				if (ac.getPassword().equals(password)) {					
+					if (ac.getBalanceCC() >= ammount) {
+						ac.setBalanceCC(ac.getBalanceCC() - ammount);
+						ac.setFixedIncome(ac.getFixedIncome() + ammount);
+						return Server.SUCCESS;
+					} else {
+						System.out.println("Saldo insuficiente");
+						return Server.NOT_MOD;
+					}
 				} else {
-					System.out.println("Saldo insuficiente");
-					return false;
+					System.out.println("Senha errada");
+					return Server.PERM_DEN;
 				}
 			}
 		}
-    	return false;
+    	return Server.NOT_FOUND;
+    }
+	
+	@Override
+    public int lootInvest(String password, int account, double ammount) throws RemoteException
+    {
+    	for (Iterator<Account> iterator = acList.iterator(); iterator.hasNext();) {
+			Account ac = (Account) iterator.next();
+			if (ac.getAccNumber() == account) {
+				if (ac.getPassword().equals(password)) {					
+					if (ac.getFixedIncome() >= ammount) {
+						ac.setFixedIncome(ac.getFixedIncome() - ammount);
+						return Server.SUCCESS;
+					} else {
+						System.out.println("Saldo insuficiente");
+						return Server.NOT_MOD;
+					}
+				} else {
+					System.out.println("Senha errada");
+					return Server.PERM_DEN;
+				}
+			}
+		}
+    	return Server.NOT_FOUND;
     }
 }

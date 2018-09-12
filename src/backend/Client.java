@@ -7,6 +7,12 @@ import common.Account;
 
 public class Client {
 	
+	public static final int SUCCESS = 200; // SUCESSO
+	public static final int FAIL = 500; // SERVER ERROR
+	public static final int PERM_DEN = 403; // PERMISSION DENIED
+	public static final int NOT_FOUND = 404; // NOT FOUND
+	public static final int NOT_MOD = 304; // NOT MODIFIED
+	
 	public static String host = "localhost";
 	
 	public static Account myAcc;
@@ -72,79 +78,76 @@ public class Client {
 		return false;
 	}	
 	
-	public static boolean lootCC(String password, double ammount) {
+	public static int lootCC(String password, double ammount) {
 		try {
-			if (Client.stub.lootCC(password, Client.myAcc.getAccNumber(), ammount)) {
+			int cod = Client.stub.lootCC(password, Client.myAcc.getAccNumber(), ammount);
+			if (cod == Client.SUCCESS) {
 				Client.myAcc.setBalanceCC(Client.myAcc.getBalanceCC() - ammount);
-				return true;
-			} else {
-				return false;
-			}
+			} 
+			return cod;
+		
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
 		}
 		
-		return false;
+		return Client.FAIL;
 	}
-	public static boolean lootCP(String password, double ammount) {
+	public static int lootCP(String password, double ammount) {
 		try {
-			if (Client.stub.lootCC(password, Client.myAcc.getAccNumber(), ammount)) {
+			int cod = Client.stub.lootCC(password, Client.myAcc.getAccNumber(), ammount);
+			if (cod == Client.SUCCESS){
 				Client.myAcc.setBalanceCP(Client.myAcc.getBalanceCP() - ammount);
-				return true;
-			} else {
-				return false;
-			}
+			} 
+			return cod;
+
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
 		}
 		
-		return false;
+		return Client.FAIL;
 	}
 	
-	public static boolean depositCC(String password, double ammount) {
+	public static int depositCC(String password, double ammount) {
 		try {
-			if (Client.stub.depositCC(password, Client.myAcc.getAccNumber(), ammount)) {
+			int cod = Client.stub.depositCC(password, Client.myAcc.getAccNumber(), ammount); 
+			if (cod == Client.SUCCESS) {
 				Client.myAcc.setBalanceCC(Client.myAcc.getBalanceCC() + ammount);
-				return true;
-			} else {
-				return false;
 			}
+			return cod;
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
 		}
-		return false;
+		return Client.FAIL;
 	}
-	public static boolean depositCP(String password, double ammount) {
+	public static int depositCP(String password, double ammount) {
 		try {
-			if (Client.stub.depositCC(password, Client.myAcc.getAccNumber(), ammount)) {
+			int cod = Client.stub.depositCC(password, Client.myAcc.getAccNumber(), ammount);
+			if (cod == Client.SUCCESS) {
 				Client.myAcc.setBalanceCP(Client.myAcc.getBalanceCP() + ammount);
-				return true;
-			} else {
-				return false;
 			}
+			return cod;
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
 		}
-		return false;
+		return Client.FAIL;
 	}
 	
-	public static boolean transfer(String password, int accountDest, double ammount) {
+	public static int transfer(String password, int accountDest, double ammount) {
 		try {
-			if (Client.stub.transfer(password, Client.myAcc.getAccNumber(), accountDest, ammount)) {
+			int cod = Client.stub.transfer(password, Client.myAcc.getAccNumber(), accountDest, ammount);
+			if (cod == Client.SUCCESS) {
 				Client.myAcc.setBalanceCC(Client.myAcc.getBalanceCC() - ammount);
-				return true;
-			} else {
-				return false;
 			}
+			return cod;
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
 		}
-		return false;
+		return Client.FAIL;
 	}
 	
 	public static Double balanceCC(String password) {
@@ -177,20 +180,33 @@ public class Client {
 		}
 		return null;
 	}
-	public static boolean invest(String password, double ammount) {
+	public static int invest(String password, double ammount) {
 		try {
-			if (Client.stub.invest(password, Client.myAcc.getAccNumber(), ammount)) {
+			int cod = Client.stub.invest(password, Client.myAcc.getAccNumber(), ammount);
+			if (cod == Client.SUCCESS) {
 				Client.myAcc.setBalanceCC(Client.myAcc.getBalanceCC() - ammount);
-				Client.myAcc.setFixedIncome(ammount);
-				return true;
-			} else {
-				return false;
+				Client.myAcc.setFixedIncome(Client.myAcc.getFixedIncome() + ammount);
 			}
+			return cod;
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
 		}
-		return false;
+		return Client.FAIL;
+	}
+	
+	public static int lootInvest(String password, double ammount) {
+		try {
+			int cod = Client.stub.lootInvest(password, Client.myAcc.getAccNumber(), ammount);
+			if (cod == Client.SUCCESS) {
+				Client.myAcc.setFixedIncome(Client.myAcc.getFixedIncome() - ammount);
+			}
+			return cod;
+		} catch (Exception e) {
+			System.err.println("Client exception: " + e.toString());
+			e.printStackTrace();
+		}
+		return Client.FAIL;
 	}
 	
 	/*public static void main(String[] args) {
