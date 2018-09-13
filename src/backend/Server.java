@@ -23,7 +23,7 @@ public class Server implements BankAcc{
 	private void populateAcc() {
 		acList.add(new Account("64373790354","Leon","Haverfield","Rua Maranhão, 38, Santa Maria","25/03/1998","59237980","f2XHN6A0xZHH"));
 		acList.add(new Account("16929553772","Oliva","Freidel","Rua Dr João Marcelino","10/08/1970","33487888","9iWKgkJvRzZ"));
-//		acList.add(new Account("46338744355","Shayne","Arbaugh","Rua 6 de janeiro, 1988, Santo Antonio","08/02/1994","96652910","4Vp"));
+		acList.add(new Account("46338744355","Shayne","Arbaugh","Rua 6 de janeiro, 1988, Santo Antonio","08/02/1994","96652910","4Vp"));
 //		acList.add(new Account("68397203131","Lindsey","Dibley","Av Rio Mossoró, 90, Alto de São Manoel","23/05/1992","24529837","LV7"));
 //		acList.add(new Account("38109792126","Tisha","Roediger","Av Rio Branco, 1010, Bom Jardim","15/01/2000","84646324","XgRuqQE2smYF060mG0IU"););
 //		acList.add(new Account("71985863642","Lisa","Petronzio","Rua 2 de abril, 15, Costa e Silva","13/01/1989","62309535","wTZNM1XFP"));
@@ -41,19 +41,22 @@ public class Server implements BankAcc{
 		// TODO Auto-generated method stub
 		
 		try {
+			System.setProperty("java.rmi.server.hostname", "192.168.43.233");
 			//criar objeto servidor
+			
 			Server server = new Server();
 			server.populateAcc();
-//			server.dumpList();
+			server.dumpList();
 			
 			BankAcc stub = (BankAcc) UnicastRemoteObject.exportObject(server, 0);
 			
-			LocateRegistry.createRegistry( 1988 );  
+			LocateRegistry.createRegistry( 1099 );
 			
-			Registry registry = LocateRegistry.getRegistry(1988);
+			Registry registry = LocateRegistry.getRegistry("192.168.43.233", 1099);
 			
 			/* O método bind é então chamado no stub do registro para vincular 
 			 * o stub do objeto remoto ao nome "Bank" no registro.*/
+			
 			
 			registry.bind("Bank", stub);
 

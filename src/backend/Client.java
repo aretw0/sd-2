@@ -21,7 +21,7 @@ public class Client {
 	
 	public static boolean startStub() {
 		try {
-			 Registry registry = LocateRegistry.getRegistry(Client.host, 1988);
+			 Registry registry = LocateRegistry.getRegistry(Client.host, 1099);
 			 Client.stub = (BankAcc) registry.lookup("Bank");
 			 return true;
 		} catch (Exception e) {
@@ -124,7 +124,7 @@ public class Client {
 	}
 	public static int depositCP(String password, double ammount) {
 		try {
-			int cod = Client.stub.depositCC(password, Client.myAcc.getAccNumber(), ammount);
+			int cod = Client.stub.depositCP(password, Client.myAcc.getAccNumber(), ammount);
 			if (cod == Client.SUCCESS) {
 				Client.myAcc.setBalanceCP(Client.myAcc.getBalanceCP() + ammount);
 			}
@@ -216,14 +216,14 @@ public class Client {
            
             if (Client.startStub()) {
             	System.out.println(Client.createAcc("09540704456", "Arthur", "Silva", "Rua dos bobos nº 0","25/05/1994", "96522210", "anarquia"));
-//            	System.out.println(Client.login("16929553772", "9iWKgkJvRzZ"));
+            	System.out.println(Client.login("16929553772", "9iWKgkJvRzZ"));
             	System.out.println(Client.depositCC("anarquia",500));
 //            	System.out.println(Client.depositCP("anarquia.88",700));
-            	System.out.println(Client.myAcc);            	
+//            	System.out.println(Client.myAcc);            	
 //            	System.out.println(Client.lootCP("anarquia",150));
-            	System.out.println(Client.invest("anarquia", 250));
-            	System.out.println(Client.myAcc);
-//            	Client.dumpServer();
+//            	System.out.println(Client.invest("anarquia", 250));
+//            	System.out.println(Client.myAcc);
+            	Client.dumpServer();
             }
             
            
